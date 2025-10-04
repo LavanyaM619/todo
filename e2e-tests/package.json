@@ -1,0 +1,13 @@
+{
+  "name": "todo-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Todo App",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:headless": "cypress run --headless"
+  },
+  "devDependencies": {
+    "cypress": "^13.17.0"
+  }
+}

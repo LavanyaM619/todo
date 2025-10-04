@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  database:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: todoapp
+      MONGO_INITDB_ROOT_PASSWORD: todoapp123
+      MONGO_INITDB_DATABASE: todoapp
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - todo-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://todoapp:todoapp123@database:27017/todoapp?authSource=admin
+    depends_on:
+      - database
+    networks:
+      - todo-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:3001
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:
+
+networks:
+  todo-network:
+    driver: bridge
